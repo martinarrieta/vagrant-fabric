@@ -17,7 +17,7 @@ connection_attempts             = 6
 connection_delay                = 1
 
 [protocol.xmlrpc]
-address                         = 192.168.70.101:8080
+address                         = 192.168.70.100:8080
 threads                         = 5
 user                            = admin
 password                        = admin
