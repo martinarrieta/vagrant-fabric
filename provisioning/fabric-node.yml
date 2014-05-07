@@ -1,0 +1,12 @@
+#- include: tasks/fabric-mysql-user.yml
+
+- hosts: all
+  sudo: yes 
+  tasks:
+      - include: tasks/common.yml
+      - include: tasks/epel-repository.yml
+      - include: tasks/mysql-repository.yml
+      - include: tasks/mysql-56-server.yml
+      - include: tasks/fabric-packages.yml
+      - include: tasks/fabric-node-config.yml
+      - include: tasks/fabric-node-mysql-user.yml

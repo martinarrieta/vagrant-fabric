@@ -1,0 +1,8 @@
+
+- name: Adding fabic mysql users
+  mysql_user: login_user=root login_password="" name=fabric host='%' password=f4bric priv=*.*:SUPER state=present
+
+- name: Adding fabic mysql users
+  mysql_user: login_user=root login_password="" name=fabric host='%' password=f4bric priv=*.*:ALL state=present
+
+

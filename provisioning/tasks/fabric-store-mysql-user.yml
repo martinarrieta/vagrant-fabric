@@ -1,0 +1,8 @@
+
+- name: Adding store mysql user
+  mysql_user: login_user=root login_password="" name=store host='localhost' password=f4bric priv=fabric.*:ALL state=present
+
+
+- name: Adding fabic database
+  mysql_db: login_user=root login_password="" name=fabric state=present
+  

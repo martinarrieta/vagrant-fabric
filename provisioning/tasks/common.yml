@@ -1,0 +1,5 @@
+- name: Disabling the fastestmirror yum plugin.
+  template: src=templates/etc/yum/pluginconf.d/fastestmirror.conf dest=/etc/yum/pluginconf.d/fastestmirror.conf
+
+- name: Stopping iptables
+  service: name=iptables state=stopped enabled=no

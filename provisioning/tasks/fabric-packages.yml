@@ -1,0 +1,5 @@
+- name: Installing MySQL connector
+  yum: name=http://dev.mysql.com/get/Downloads/MySQLGUITools/mysql-connector-python-1.2.1-1.el6.noarch.rpm
+
+- name: Installing MySQL utilities
+  yum: name=http://dev.mysql.com/get/Downloads/MySQLGUITools/mysql-utilities-1.4.2-1.el6.noarch.rpm
