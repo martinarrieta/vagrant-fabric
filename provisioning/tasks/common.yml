@@ -3,3 +3,6 @@
 
 - name: Stopping iptables
   service: name=iptables state=stopped enabled=no
+  
+- name: Adding the /etc/hosts file.
+  template: src=etc/hosts.t dest=/etc/hosts

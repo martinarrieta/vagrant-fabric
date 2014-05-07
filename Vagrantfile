@@ -1,26 +1,26 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# Assumes a box from https://github.com/jayjanssen/packer-percona
+# Assumes a box from https://github.com/2creatives/vagrant-centos/releases/download/v6.5.3/centos65-x86_64-20140116.box
 
-# This sets up 3 nodes, one with fabric-server and 2 nodes with fabric-connector.
+# This sets up 4 nodes, one with fabric-store and 3 nodes.
 
 
 fabric_nodes = {
   'store' => {
-    'ip' => '192.168.70.101',
+    'ip' => '192.168.70.100',
     'playbook' => 'fabric-store.yml'
   },
   'node1' => {
-    'ip' => '192.168.70.102',
+    'ip' => '192.168.70.101',
     'playbook' => 'fabric-node.yml'
   },
   'node2' => {
-    'ip' => '192.168.70.103',
+    'ip' => '192.168.70.102',
     'playbook' => 'fabric-node.yml'
   },
   'node3' => {
-    'ip' => '192.168.70.104',
+    'ip' => '192.168.70.103',
     'playbook' => 'fabric-node.yml'
   },
 }
