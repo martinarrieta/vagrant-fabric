@@ -1,3 +1,5 @@
+- name: Disable binary logging due to http://bugs.mysql.com/bug.php?id=72281. This does a SET GLOBAL so it's only meant to be run on test servers
+  mysql_variables: login_user=root login_password="" variable=sql_log_bin value=0
 
 - name: Adding fabic mysql users
   mysql_user: login_user=root login_password="" name=fabric host='%' password=f4bric priv=*.*:SUPER state=present
@@ -5,4 +7,6 @@
 - name: Adding fabic mysql users
   mysql_user: login_user=root login_password="" name=fabric host='%' password=f4bric priv=*.*:ALL state=present
 
+- name: Enable binary logging
+  mysql_variables: login_user=root login_password="" variable=sql_log_bin value=1
 
