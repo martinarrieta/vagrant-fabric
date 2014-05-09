@@ -72,9 +72,9 @@ For example:
 Start a VM
 --------------
 
-This command will stop the vm if is running and it will remove the vm files.
+This command will create and start the vm.
 
-    vagrant destroy <vm_name>
+    vagrant up <vm_name>
 
 For example: 
 
@@ -88,6 +88,24 @@ For example:
  
 The important one is "failed=0" :)
 
+Provision a VM
+--------------
+
+This command will run all the ansible playbooks, the VM must be "UP".
+
+    vagrant provision <vm_name>
+
+For example: 
+
+    $ vagrant provision node3
+    [node3] Running provisioner: ansible...
+    PLAY [all] ********************************************************************
+    ...
+    PLAY RECAP ********************************************************************
+    node3                      : ok=14   changed=1   unreachable=0    failed=0
  
+Again, the important one is "failed=0" :)
+
+
 
 
