@@ -18,6 +18,8 @@ fi
 cat>commands.$$ <<EOF
 mysqlfabric manage stop 2>/dev/null
 mysqlfabric manage teardown
+mysqlfabric manage setup
+sudo mysqlfabric manage start --daemon
 
 EOF
 
@@ -32,7 +34,7 @@ sudo mkdir /var/lib/mysql/
 sudo mysql_install_db --defaults-file=/etc/my.cnf
 sudo chown -R mysql.mysql /var/lib/mysql
 sudo service mysqld start
-mysql -uroot -e 'grant SUPER on *.* to fabric@"%" identified by "f4bric"; grant ALL on *.* to fabric@"%";'
+mysql -uroot -e 'set @@session.sql_log_bin=0;grant SUPER on *.* to fabric@"%" identified by "f4bric"; grant ALL on *.* to fabric@"%";stop slave;reset slave all;reset master;'
 
 EOF
     vagrant ssh node$i -c "$(cat commands.$$)"
