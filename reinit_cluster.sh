@@ -15,23 +15,30 @@ if [ $force == 0 ]; then
     confirmation || exit
 fi
 
-cat | vagrant ssh store <<EOF
-
+cat>commands.$$ <<EOF
+mysqlfabric manage stop 2>/dev/null
 mysqlfabric manage teardown
 
 EOF
 
+vagrant ssh store -c "$(cat commands.$$)"
+
 for i in 1 2 3; do
-    cat | vagrant ssh node$i <<EOF
+    cat >commands.$$ <<EOF
 
 sudo service mysqld stop
 sudo rm -rf /var/lib/mysql/
 sudo mkdir /var/lib/mysql/
-sudo mysql_install_db
+sudo mysql_install_db --defaults-file=/etc/my.cnf
 sudo chown -R mysql.mysql /var/lib/mysql
 sudo service mysqld start
+mysql -uroot -e 'grant SUPER on *.* to fabric@"%" identified by "f4bric"; grant ALL on *.* to fabric@"%";'
 
 EOF
+    vagrant ssh node$i -c "$(cat commands.$$)"
+
 done
+
+rm -f commands.$$
 
 exit 0
