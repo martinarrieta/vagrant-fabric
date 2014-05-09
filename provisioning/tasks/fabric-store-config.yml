@@ -1,2 +1,2 @@
-- name: Disabling the fastestmirror yum plugin.
+- name: Adding the /etc/mysql/fabric.cfg file.
   template: src=etc/mysql/fabric.cfg.t dest=/etc/mysql/fabric.cfg

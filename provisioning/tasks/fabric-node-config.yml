@@ -1,4 +1,4 @@
-- shell: ifconfig |grep 192.168.70|sed 's/.*addr://g'|sed 's/  Bcast.*//g'|tr -d '.' 
+- shell: ifconfig |grep 192.168.70|sed 's/.*addr://g'|sed 's/  Bcast.*//g'|tr -d '.' | cut -c 6-
   register: server_id
   
 - name: Adding the /etc/my.cnf file.
