@@ -6,7 +6,7 @@ confirmation()
 {
 echo "This will destroy the datadir on all nodes and teardown Fabric's store. Do you want to continue? (y/N)  (you can skip this prompt by using the --force option)" >&2
 read confirmation
-return [ "$confirmation" == "y" ] && return 0 || return 1
+[ "$confirmation" == "y" ] && return 0 || return 1
 }
 
 force=0
