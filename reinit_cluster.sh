@@ -15,6 +15,8 @@ if [ $force == 0 ]; then
     confirmation || exit
 fi
 
+trap "rm -f commands.$$" SIGINT SIGTERM
+
 cat>commands.$$ <<EOF
 mysqlfabric manage stop 2>/dev/null
 mysqlfabric manage teardown
@@ -27,19 +29,25 @@ vagrant ssh store -c "$(cat commands.$$)"
 
 for i in 1 2 3; do
     cat >commands.$$ <<EOF
-
+set -x
 sudo service mysqld stop
 sudo rm -rf /var/lib/mysql/
 sudo mkdir /var/lib/mysql/
 sudo mysql_install_db --defaults-file=/etc/my.cnf
 sudo chown -R mysql.mysql /var/lib/mysql
 sudo service mysqld start
-mysql -uroot -e 'set @@session.sql_log_bin=0;grant SUPER on *.* to fabric@"%" identified by "f4bric"; grant ALL on *.* to fabric@"%";stop slave;reset slave all;reset master;'
-
+mysql -vv -uroot -e 'grant super on *.* to fabric@"%" identified by "f4bric"; grant all on *.* to fabric@"%";'
 EOF
     vagrant ssh node$i -c "$(cat commands.$$)"
 
 done
+
+	sleep 2
+
+for i in 1 2 3; do
+    vagrant ssh node$i -c "mysql -uroot -e 'reset master'"
+done
+
 
 rm -f commands.$$
 

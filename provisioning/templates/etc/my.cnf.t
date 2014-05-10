@@ -9,10 +9,12 @@
 #
 # Remove leading # to turn on a very important data integrity option: logging
 # changes to the binary log between backups.
-log_bin
-gtid_mode=ON
+log_bin=mysql-bin
+gtid-mode=ON
+binlog_format=ROW
 enforce-gtid-consistency
 log_slave_updates
+skip-slave-start
 
 server_id = {{ server_id.stdout }}
 #
