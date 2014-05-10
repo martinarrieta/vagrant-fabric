@@ -11,7 +11,7 @@
 # changes to the binary log between backups.
 log_bin
 gtid_mode=ON
-enforce_gtid_consistency
+enforce-gtid-consistency
 log_slave_updates
 
 server_id = {{ server_id.stdout }}
