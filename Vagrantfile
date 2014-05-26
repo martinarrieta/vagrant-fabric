@@ -3,10 +3,14 @@
 
 # Assumes a box from https://github.com/2creatives/vagrant-centos/releases/download/v6.5.3/centos65-x86_64-20140116.box
 
-# This sets up 4 nodes, one with fabric-store and 3 nodes.
+# This sets up 4 instances, one with fabric-store and 3 nodes.
 
 
 fabric_nodes = {
+  'storebackup' => {
+    'ip' => '192.168.70.99',
+    'playbook' => 'fabric-store.yml'
+  }, 
   'store' => {
     'ip' => '192.168.70.100',
     'playbook' => 'fabric-store.yml'
@@ -38,6 +42,7 @@ Vagrant.configure("2") do |config|
       node_config.vm.provision :ansible do |ansible|
         ansible.verbose = ''
         ansible.extra_vars = { ansible_ssh_user: 'vagrant' }
+        ansible.inventory_path = 'provisioning/ansible_hosts'
         ansible.playbook = 'provisioning/' + node_params['playbook']
         ansible.host_key_checking = false
         # Disable default limit (required with Vagrant 1.5+)

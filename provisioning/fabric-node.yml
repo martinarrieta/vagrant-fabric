@@ -1,6 +1,6 @@
 #- include: tasks/fabric-mysql-user.yml
 
-- hosts: all
+- hosts: nodes
   sudo: yes 
   tasks:
       - include: tasks/common.yml

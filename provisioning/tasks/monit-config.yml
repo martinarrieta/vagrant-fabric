@@ -1,0 +1,2 @@
+- name: Installing Monit 
+  yum: name=monit state=latest

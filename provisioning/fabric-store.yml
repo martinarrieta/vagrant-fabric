@@ -1,6 +1,6 @@
 #- include: tasks/fabric-mysql-user.yml
 
-- hosts: all
+- hosts: stores
   sudo: yes 
   tasks:
       - include: tasks/common.yml
@@ -11,3 +11,4 @@
       - include: tasks/fabric-packages.yml
       - include: tasks/fabric-store-config.yml
       - include: tasks/fabric-store-mysql-user.yml
+      - include: tasks/monit-config.yml
