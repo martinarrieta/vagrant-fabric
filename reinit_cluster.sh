@@ -31,12 +31,19 @@ for i in 1 2 3; do
     cat >commands.$$ <<EOF
 set -x
 sudo service mysqld stop
+sudo service mysqld2 stop
 sudo rm -rf /var/lib/mysql/
+sudo rm -rf /var/lib/mysql2
 sudo mkdir /var/lib/mysql/
+sudo mkdir /var/lib/mysql2
 sudo mysql_install_db --defaults-file=/etc/my.cnf
+sudo mysql_install_db --defaults-file=/etc/my2.cnf
 sudo chown -R mysql.mysql /var/lib/mysql
+sudo chown -R mysql.mysql /var/lib/mysql2
 sudo service mysqld start
-mysql -vv -uroot -e 'grant super on *.* to fabric@"%" identified by "f4bric"; grant all on *.* to fabric@"%";'
+sudo service mysqld2 start
+mysql -vv -u127.0.0.1 -P3306 -uroot -e 'grant super on *.* to fabric@"%" identified by "f4bric"; grant all on *.* to fabric@"%";'
+mysql -vv -h127.0.0.1 -P13306 -uroot -e 'grant super on *.* to fabric@"%" identified by "f4bric"; grant all on *.* to fabric@"%";'
 EOF
     vagrant ssh node$i -c "$(cat commands.$$)"
 

@@ -1,12 +1,24 @@
 - name: Disable binary logging due to http://bugs.mysql.com/bug.php?id=72281. This does a SET GLOBAL so it's only meant to be run on test servers
-  mysql_variables: login_user=root login_password="" variable=sql_log_bin value=0
+  mysql_variables: login_host=127.0.0.1 login_unix_socket=/var/lib/mysql/mysql.sock login_user=root login_password="" variable=sql_log_bin value=0
 
 - name: Adding fabic mysql users
-  mysql_user: login_user=root login_password="" name=fabric host='%' password=f4bric priv=*.*:SUPER state=present
+  mysql_user: login_host=127.0.0.1 login_port=3306 login_user=root login_password="" name=fabric host='%' password=f4bric priv=*.*:SUPER state=present
 
 - name: Adding fabic mysql users
-  mysql_user: login_user=root login_password="" name=fabric host='%' password=f4bric priv=*.*:ALL state=present
+  mysql_user: login_host=127.0.0.1 login_port=3306 login_user=root login_password="" name=fabric host='%' password=f4bric priv=*.*:ALL state=present
 
 - name: Enable binary logging
-  mysql_variables: login_user=root login_password="" variable=sql_log_bin value=1
+  mysql_variables: login_host=127.0.0.1 login_unix_socket=/var/lib/mysql/mysql.sock login_user=root login_password="" variable=sql_log_bin value=1
 
+# and now the same for the second instance
+- name: (mysqld2) Disable binary logging due to http://bugs.mysql.com/bug.php?id=72281. This does a SET GLOBAL so it's only meant to be run on test servers
+  mysql_variables: login_host=127.0.0.1 login_unix_socket=/var/lib/mysql2/mysql2.sock login_user=root login_password="" variable=sql_log_bin value=0
+
+- name: (mysqld2) Adding fabic mysql users
+  mysql_user: login_host=127.0.0.1 login_port=13306 login_user=root login_password="" name=fabric host='%' password=f4bric priv=*.*:SUPER state=present
+
+- name: (mysqld2) Adding fabic mysql users
+  mysql_user: login_host=127.0.0.1 login_port=13306 login_user=root login_password="" name=fabric host='%' password=f4bric priv=*.*:ALL state=present
+
+- name: (mysqld2) Enable binary logging
+  mysql_variables: login_host=127.0.0.1 login_unix_socket=/var/lib/mysql2/mysql2.sock login_user=root login_password="" variable=sql_log_bin value=1

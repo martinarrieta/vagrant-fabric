@@ -15,7 +15,8 @@ binlog_format=ROW
 enforce-gtid-consistency
 log_slave_updates
 skip-slave-start
-
+port = {{ port }}
+socket = {{ socket }}
 server_id = {{ server_id.stdout }}
 #
 # Remove leading # to set options mainly useful for reporting servers.
@@ -24,8 +25,7 @@ server_id = {{ server_id.stdout }}
 # join_buffer_size = 128M
 # sort_buffer_size = 2M
 # read_rnd_buffer_size = 2M
-datadir=/var/lib/mysql
-socket=/var/lib/mysql/mysql.sock
+datadir={{ datadir }}
 
 # Disabling symbolic-links is recommended to prevent assorted security risks
 symbolic-links=0
@@ -34,5 +34,5 @@ symbolic-links=0
 sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
 
 [mysqld_safe]
-log-error=/var/log/mysqld.log
-pid-file=/var/run/mysqld/mysqld.pid
+log-error={{ errorl }}
+pid-file={{ pidf }}
