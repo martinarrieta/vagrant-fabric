@@ -1,2 +1,2 @@
 - name: Installing MySQL utilities
-  yum: name=http://dev.mysql.com/get/Downloads/MySQLGUITools/mysql-utilities-1.4.2-1.el6.noarch.rpm
+  yum: pkg=mysql-utilities state=latest
