@@ -40,9 +40,14 @@ Vagrant.configure("2") do |config|
       node_config.vm.hostname = "#{node}.local"
       node_config.vm.network :private_network, ip: node_params['ip']
       node_config.vm.provision :ansible do |ansible|
-        ansible.verbose = ''
+        ansible.groups = {
+          "stores" => ['store', 'storebackup'],
+          "nodes" => ['node1', 'node2', 'node3'],
+          "all_groups:children" => ["stores", "nodes"]
+        }
+        ansible.verbose = 'vv'
         ansible.extra_vars = { ansible_ssh_user: 'vagrant' }
-        ansible.inventory_path = 'provisioning/ansible_hosts'
+        #ansible.inventory_path = 'provisioning/ansible_hosts'
         ansible.playbook = 'provisioning/' + node_params['playbook']
         ansible.host_key_checking = false
         # Disable default limit (required with Vagrant 1.5+)
