@@ -1,8 +1,2 @@
 - name: Installing Python MySQL connector
   yum: name=mysql-connector-python state=latest
-
-- name: Installing Java MySQL connector
-  get_url: url=http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.30.tar.gz dest=/home/vagrant/
-
-- name: Installing OpenJDK
-  yum: name=java-1.7.0-openjdk-devel state=latest
