@@ -7,10 +7,6 @@
 
 
 fabric_nodes = {
-  'storebackup' => {
-    'ip' => '192.168.70.99',
-    'playbook' => 'fabric-store.yml'
-  }, 
   'store' => {
     'ip' => '192.168.70.100',
     'playbook' => 'fabric-store.yml'
@@ -41,7 +37,7 @@ Vagrant.configure("2") do |config|
       node_config.vm.network :private_network, ip: node_params['ip']
       node_config.vm.provision :ansible do |ansible|
         ansible.groups = {
-          "stores" => ['store', 'storebackup'],
+          "stores" => ['store'],
           "nodes" => ['node1', 'node2', 'node3'],
           "all_groups:children" => ["stores", "nodes"]
         }
