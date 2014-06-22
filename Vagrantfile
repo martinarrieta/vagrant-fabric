@@ -22,7 +22,7 @@ fabric_nodes = {
   'node3' => {
     'ip' => '192.168.70.103',
     'playbook' => 'fabric-node.yml'
-  },
+  }
 }
 
 

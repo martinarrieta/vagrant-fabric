@@ -6,7 +6,7 @@
       - include: tasks/common.yml
       - include: tasks/epel-repository.yml
       - include: tasks/mysql-repository.yml
-      - include: tasks/fabric-node-config.yml
       - include: tasks/mysql-56-server.yml
+      - include: tasks/fabric-node-config.yml
       - include: tasks/fabric-connector.yml
       - include: tasks/fabric-node-mysql-user.yml

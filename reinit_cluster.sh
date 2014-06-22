@@ -21,7 +21,7 @@ cat>commands.$$ <<EOF
 mysqlfabric manage stop 2>/dev/null
 mysqlfabric manage teardown
 mysqlfabric manage setup
-sudo mysqlfabric manage start --daemon
+nohup mysqlfabric manage start &
 
 EOF
 
@@ -42,7 +42,7 @@ sudo chown -R mysql.mysql /var/lib/mysql
 sudo chown -R mysql.mysql /var/lib/mysql2
 sudo service mysqld start
 sudo service mysqld2 start
-mysql -vv -u127.0.0.1 -P3306 -uroot -e 'grant super on *.* to fabric@"%" identified by "f4bric"; grant all on *.* to fabric@"%";'
+mysql -vv -h127.0.0.1 -P3306 -uroot -e 'grant super on *.* to fabric@"%" identified by "f4bric"; grant all on *.* to fabric@"%";'
 mysql -vv -h127.0.0.1 -P13306 -uroot -e 'grant super on *.* to fabric@"%" identified by "f4bric"; grant all on *.* to fabric@"%";'
 EOF
     vagrant ssh node$i -c "$(cat commands.$$)"
@@ -52,7 +52,9 @@ done
 	sleep 2
 
 for i in 1 2 3; do
-    vagrant ssh node$i -c "mysql -uroot -e 'reset master'"
+    for port in 3306 13306; do
+	vagrant ssh node$i -c "mysql -h127.0.0.1 -P$port -uroot -e 'reset master'"
+    done
 done
 
 

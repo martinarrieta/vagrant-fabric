@@ -31,3 +31,6 @@
 
 - name: Start the second MySQL service
   service: name=mysqld2 state=started enabled=yes
+
+- shell: /etc/init.d/mysqld restart
+- shell: /etc/init.d/mysqld2 restart
