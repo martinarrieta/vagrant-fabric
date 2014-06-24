@@ -11,26 +11,4 @@
   template: src=etc/my.cnf.t dest=/etc/my.cnf
 
 
-- shell: ifconfig |grep 192.168.70|sed 's/.*addr://g'|sed 's/  Bcast.*//g'|tr -d '.' | cut -c 6- | sed 's/8/3/g'
-  register: server_id
-
-- set_fact: port="13306"
-- set_fact: socket="/var/lib/mysql2/mysql2.sock"
-- set_fact: pidf="/var/run/mysqld/mysqld2.pid"
-- set_fact: errorl="/var/log/mysqld2.log"
-- set_fact: datadir="/var/lib/mysql2"
-
-- name: Adding the /etc/my2.cnf file.
-  template: src=etc/my.cnf.t dest=/etc/my2.cnf
-
-- name: Copying init script for second mysqld instance
-  template: src=etc/init.d/mysqld2 dest=/etc/init.d/mysqld2 mode=755
-
-- shell: mysql_install_db --datadir=/var/lib/mysql2
-- shell: chown -R mysql.mysql /var/lib/mysql2
-
-- name: Start the second MySQL service
-  service: name=mysqld2 state=started enabled=yes
-
-- shell: /etc/init.d/mysqld restart
-- shell: /etc/init.d/mysqld2 restart
+- shell: /etc/init.d/mysql restart

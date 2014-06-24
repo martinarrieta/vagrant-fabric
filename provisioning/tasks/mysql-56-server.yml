@@ -1,12 +1,14 @@
-- name: Installing mysql-community-server
-  yum: pkg=mysql-community-server state=latest
+- name: Installing Percona Release repo 
+  yum: pkg=http://www.percona.com/downloads/percona-release/percona-release-0.0-1.x86_64.rpm state=present
   
-- name: Installing mysql-community-client
-  yum: pkg=mysql-community-client state=latest
+- name: Installing Percona Server server 
+  yum: pkg=Percona-Server-server-56 state=latest
+
+- name: Installing Percona Server client 
+  yum: pkg=Percona-Server-client-56 state=latest
 
 - name: Start the MySQL service
-  service: name=mysqld state=started enabled=yes
-
+  service: name=mysql state=started enabled=yes
 
 - name: Installing MySQL-python
   yum: pkg=MySQL-python state=latest
