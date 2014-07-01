@@ -15,9 +15,9 @@ binlog_format=ROW
 enforce-gtid-consistency
 log_slave_updates
 skip-slave-start
-port = {{ port }}
-socket = {{ socket }}
-server_id = {{ server_id.stdout }}
+port={{ port }}
+socket={{ socket }}
+server_id={{ server_id.stdout }}
 #
 # Remove leading # to set options mainly useful for reporting servers.
 # The server defaults are faster for transactions and fast SELECTs.

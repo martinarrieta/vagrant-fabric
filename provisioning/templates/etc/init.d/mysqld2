@@ -43,7 +43,7 @@ get_mysql_option(){
 }
 
 datadir="/var/lib/mysql2"
-wsocketfile="$datadir/mysql2.sock"
+socketfile="$datadir/mysql2.sock"
 errlogfile="/var/log/mysqld2.log"
 mypidfile="/var/run/mysqld/mysqld2.pid"
 port=13306

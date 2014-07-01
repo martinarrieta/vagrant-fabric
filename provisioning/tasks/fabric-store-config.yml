@@ -1,2 +1,8 @@
 - name: Adding the /etc/mysql/fabric.cfg file.
   template: src=etc/mysql/fabric.cfg.t dest=/etc/mysql/fabric.cfg
+  
+- name: Initializing Fabric store
+  shell: mysqlfabric manage setup
+
+- name: Starting Fabric XML-RPC daemon
+  shell: nohup mysqlfabric manage start &

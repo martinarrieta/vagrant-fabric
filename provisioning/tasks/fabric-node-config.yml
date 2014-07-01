@@ -34,3 +34,6 @@
 
 - shell: /etc/init.d/mysqld restart
 - shell: /etc/init.d/mysqld2 restart
+  
+- name: Add .bashrc
+  template: src=.bashrc dest=/home/vagrant/.bashrc mode=755
