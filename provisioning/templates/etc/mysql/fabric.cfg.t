@@ -5,7 +5,6 @@ logdir                          = /var/log
 
 [servers]
 user                            = fabric
-password                        = f4bric
 
 [storage]
 address                         = localhost:3306 

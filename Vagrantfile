@@ -3,7 +3,7 @@
 
 # Assumes a box from https://github.com/2creatives/vagrant-centos/releases/download/v6.5.3/centos65-x86_64-20140116.box
 
-# This sets up 4 instances, one with fabric-store and 3 nodes.
+# This sets up 5 instances, one with fabric-store and 4 nodes. Each node has a mysqld instance listening on 3306 and one on 13306
 
 
 fabric_nodes = {
@@ -22,6 +22,10 @@ fabric_nodes = {
   'node3' => {
     'ip' => '192.168.70.103',
     'playbook' => 'fabric-node.yml'
+  },
+  'node4' => {
+    'ip' => '192.168.70.104',
+    'playbook' => 'fabric-node.yml'
   }
 }
 
@@ -38,7 +42,7 @@ Vagrant.configure("2") do |config|
       node_config.vm.provision :ansible do |ansible|
         ansible.groups = {
           "stores" => ['store'],
-          "nodes" => ['node1', 'node2', 'node3'],
+          "nodes" => ['node1', 'node2', 'node3', 'node4'],
           "all_groups:children" => ["stores", "nodes"]
         }
         ansible.verbose = 'vv'
