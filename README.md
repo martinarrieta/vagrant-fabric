@@ -106,6 +106,12 @@ For example:
  
 Again, the important one is "failed=0" :)
 
+Percona Webinar command transcript
+-------------
+
+Here is a transcript of the commands we use to deliver a Percona Webinar on MySQL Fabric: https://github.com/martinarrieta/vagrant-fabric/blob/sharding/webinar-commands/session-0.org
+
+
 
 
 
