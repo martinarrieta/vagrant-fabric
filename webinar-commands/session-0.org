@@ -228,7 +228,6 @@ While running these commands, Fabric does a few things, among them:
 - points the PRIMARY node for salaries-3 as a replica of the PRIMARY node of salaries-global
 - updates it's routing information so that writes to shard 2 now go to group salaries-3
 
-*** TODO Must verify what happens to established connections that are using the cache. It seems they continue writing to the original server
 ** splitting a shard
 This creates a new group called salaries-4, and then splits shard 1, moving the second chunk to the nodes on salaries-4
 #+BEGIN_SRC sh
