@@ -1,0 +1,240 @@
+* setting up fabric
+on the store: 
+
+#+BEGIN_SRC sh
+mysqlfabric manage setup
+#+END_SRC
+* starting fabric
+on the store: 
+
+#+BEGIN_SRC sh
+nohup mysqlfabric manage start &
+#+END_SRC
+we need to use nohup because --daemon stopped working on this release (see http://bugs.mysql.com/bug.php?id=72818)
+now fabric should be running and responding to requests :
+
+#+BEGIN_EXAMPLE
+[vagrant@store ~]$ mysqlfabric group lookup_groups
+Command :
+{ success     = True
+  return      = []
+  activities  = 
+}
+#+END_EXAMPLE
+
+* restarting from scratch
+You can always go back to a clean slate by running either: 
+
+#+BEGIN_SRC sh
+vagrant destroy -f
+vagrant up
+#+END_SRC 
+
+or: 
+
+#+BEGIN_SRC sh
+./reinit_cluster.sh --force
+#+END_SRC
+
+In both cases, the commands are run from the directory where you cloned the repo into. 
+* ha
+** create the group
+Run this on the store: 
+
+#+BEGIN_SRC sh
+mysqlfabric group create ha
+for i in 1 2 3; do mysqlfabric group add ha node$i; done
+mysqlfabric group promote ha
+mysqlfabric group activate ha
+#+END_SRC
+when this is done, you'll have a group with 3 nodes, one of them PRIMARY: 
+
+#+BEGIN_EXAMPLE
+[vagrant@store ~]$ mysqlfabric group health ha
+Command :
+{ success     = True
+  return      = {'c3c6e2b9-176c-11e4-a0f1-0800274fb806': {'status': 'PRIMARY', 'is_alive': True, 'threads': {}}, '64b3ee23-176d-11e4-a0f5-0800274fb806': {'status': 'SECONDARY', 'is_alive': True, 'threads': {}}, '5ac13242-176e-11e4-a0fb-0800274fb806': {'status': 'SECONDARY', 'is_alive': True, 'threads': {}}}
+  activities  = 
+}
+#+END_EXAMPLE
+** dealing with failure
+Check the host name for the PRIMARY node: 
+
+#+BEGIN_EXAMPLE
+[vagrant@store ~]$ mysqlfabric group lookup_servers ha
+Command :
+{ success     = True
+  return      = [{'status': 'SECONDARY', 'server_uuid': '5ac13242-176e-11e4-a0fb-0800274fb806', 'mode': 'READ_ONLY', 'weight': 1.0, 'address': 'node3'}, {'status': 'SECONDARY', 'server_uuid': '64b3ee23-176d-11e4-a0f5-0800274fb806', 'mode': 'READ_ONLY', 'weight': 1.0, 'address': 'node2'}, {'status': 'PRIMARY', 'server_uuid': 'c3c6e2b9-176c-11e4-a0f1-0800274fb806', 'mode': 'READ_WRITE', 'weight': 1.0, 'address': 'node1'}]
+  activities  = 
+}
+#+END_EXAMPLE
+
+In this case, it's node1, but in your case it may be different. 
+Whatever node it is, let's connect to it and run this: 
+
+#+BEGIN_SRC sh
+sudo service mysqld stop
+#+END_SRC
+
+After that, the group health command should show an updated status: 
+
+#+BEGIN_EXAMPLE
+[vagrant@store ~]$ mysqlfabric group health ha
+Command :
+{ success     = True
+  return      = {'c3c6e2b9-176c-11e4-a0f1-0800274fb806': {'status': 'FAULTY', 'is_alive': False, 'threads': {}}, '64b3ee23-176d-11e4-a0f5-0800274fb806': {'status': 'PRIMARY', 'is_alive': True, 'threads': {}}, '5ac13242-176e-11e4-a0fb-0800274fb806': {'status': 'SECONDARY', 'is_alive': True, 'threads': {}}}
+  activities  = 
+}
+#+END_EXAMPLE
+
+We can see that Fabric promotes another node as PRIMARY, and marks node 1 as FAULTY
+** recovering from failure
+Let's resolve the problem on the FAULTY node by connecting to it and running
+
+#+BEGIN_SRC sh
+sudo service mysqld start
+#+END_SRC
+
+To get it back into rotation, we need to go back to the store and run this: 
+#+BEGIN_SRC sh
+mysqlfabric server set_status c3c6e2b9-176c-11e4-a0f1-0800274fb806 SPARE
+mysqlfabric set_status c3c6e2b9-176c-11e4-a0f1-0800274fb806 SECONDARY
+#+END_SRC
+
+Now we can check the group's health again, and there should be no FAULTY nodes: 
+#+BEGIN_EXAMPLE
+[vagrant@store ~]$ mysqlfabric group health ha
+Command :
+{ success     = True
+  return      = {'c3c6e2b9-176c-11e4-a0f1-0800274fb806': {'status': 'SECONDARY', 'is_alive': True, 'threads': {}}, '64b3ee23-176d-11e4-a0f5-0800274fb806': {'status': 'PRIMARY', 'is_alive': True, 'threads': {}}, '5ac13242-176e-11e4-a0fb-0800274fb806': {'status': 'SECONDARY', 'is_alive': True, 'threads': {}}}
+  activities  = 
+}
+#+END_EXAMPLE
+** using the cluster
+Let's create a test database and table, and insert some data into it: 
+#+BEGIN_SRC sql
+create database if not exists test;
+use test;
+create table if not exists test (id int unsigned not null auto_increment primary key) engine = innodb;
+insert into test values (null),(null),(null);
+#+END_SRC
+Here's a python script that reads data from a table in the ha group: 
+#+BEGIN_SRC python
+import mysql.connector
+from mysql.connector import fabric
+from mysql.connector import errors
+import time
+ 
+config = {
+    'fabric': {
+        'host': '192.168.70.100',
+        'port': 8080,
+        'username': 'admin',
+        'password': 'admin',
+        'report_errors': True
+    },
+    'user': 'fabric',
+    'password': 'f4bric',
+    'database': 'test',
+    'autocommit': 'true'
+}
+ 
+ 
+fcnx = mysql.connector.connect(**config)
+fcnx.set_property(group='mycluster', mode=fabric.MODE_READWRITE)
+print "will create the table if needed"
+Cur.execute("create database if not exists test; create table if not exists test.test (id int unsigned not null auto_increment primary key) engine = innodb; insert into test.test values (null),(null),(null);")
+print "starting loop"
+while 1:
+    if fcnx == None:
+    print "connecting"
+        fcnx = mysql.connector.connect(**config)
+        fcnx.set_property(group='mycluster', mode=fabric.MODE_READWRITE)
+    try:
+    print "will run query"
+        cur = fcnx.cursor()
+        cur.execute("select id, sleep(0.2) from test.test limit 1")
+        for (id) in cur:
+            print id
+    print "will sleep 1 second"
+        time.sleep(1)
+    except errors.DatabaseError:
+        print "sleeping 1 second and reconnecting"
+        time.sleep(1)
+        del fcnx
+        fcnx = mysql.connector.connect(**config)
+        fcnx.set_property(group='mycluster', mode=fabric.MODE_READWRITE)
+        fcnx.reset_cache()
+        try:
+            cur = fcnx.cursor()
+            cur.execute("select 1")
+        except errors.InterfaceError:
+            fcnx = mysql.connector.connect(**config)
+            fcnx.set_property(group='mycluster', mode=fabric.MODE_READWRITE)
+            fcnx.reset_cache()
+#+END_SRC
+* sharding
+** creating the groups
+If you've done the HA example, now is the time to follow the [[restarting from scratch]] instructions. 
+Now you're ready to go and create groups for the sharding example: 
+
+#+BEGIN_SRC sh
+mysqlfabric group create salaries-global
+for i in 1 2; do mysqlfabric group create salaries-$i; done
+mysqlfabric group add salaries-global node1:3306
+mysqlfabric group add salaries-1 node2:3306
+mysqlfabric group add salaries-1 node1:13306
+mysqlfabric group add salaries-2 node3:3306
+mysqlfabric group add salaries-2 node2:13306
+for g in global 1 2; do mysqlfabric group promote salaries-$g; done
+#+END_SRC
+** creating the sharding definition
+Run on the store: 
+#+BEGIN_SRC sh
+mysqlfabric sharding create_definition RANGE salaries-global
+mysqlfabric sharding add_table 1 employees.salaries emp_no
+mysqlfabric sharding add_shard 1 "salaries-1/1, salaries-2/25000" --state=ENABLED
+#+END_SRC
+** create the table
+Run this on the PRIMARY node for the salaries-global group (this is node1:3306, if you've been following the example): 
+#+BEGIN_SRC sql
+create database if not exists employees;
+use employees;
+create table salaries (
+  emp_no INT NOT NULL,
+  salary INT NOT NULL,
+  from_date DATE NOT NULL,
+  to_date DATE NOT NULL,
+  KEY(emp_no));
+#+END_SRC
+** insert data into the sharded salaries table
+You can use the random_insert_employees.py script found on the repo's root for this. 
+Just run it on your host machine and make sure there are no firewalls that prevent it from reaching the VMs 
+** moving a shard
+You can move a shard to another server if, for example, you want to assign a more powerful machine to it. 
+Here we'll move shard 2 to node4:3306. For that, we need to create a new group, and then do the move. 
+All of this happens on the store: 
+
+#+BEGIN_SRC sh
+mysqlfabric group create salaries-3
+mysqlfabric group add salaries-3 node4:3306
+mysqlfabric group promote salaries-3
+mysqlfabric sharding move_shard 2 salaries-3
+#+END_SRC
+
+
+While running these commands, Fabric does a few things, among them: 
+- uses mysqldump and the mysql client to make a backup of shard 2 and then load it on the PRIMARY node for salaries-3
+- points the PRIMARY node for salaries-3 as a replica of the PRIMARY node of salaries-global
+- updates it's routing information so that writes to shard 2 now go to group salaries-3
+
+*** TODO Must verify what happens to established connections that are using the cache. It seems they continue writing to the original server
+** splitting a shard
+This creates a new group called salaries-4, and then splits shard 1, moving the second chunk to the nodes on salaries-4
+#+BEGIN_SRC sh
+mysqlfabric group create salaries-4
+mysqlfabric group add salaries-4 node4:13306
+mysqlfabric group add salaries-4 node3:13306
+mysqlfabric group promote salaries-4
+mysqlfabric sharding split_shard 1 salaries-4
+#+END_SRC
