@@ -42,10 +42,10 @@ sudo chown -R mysql.mysql /var/lib/mysql
 sudo chown -R mysql.mysql /var/lib/mysql2
 sudo service mysqld start
 sudo service mysqld2 start
-mysql -vv -h127.0.0.1 -P3306 -uroot -e 'grant all on *.* to fabric@"%" identified by "f4bric"; grant all on *.* to fabric@"%";'
-mysql -vv -h127.0.0.1 -P3306 -uroot -e 'grant all on *.* to fabric@localhost identified by "f4bric"; grant all on *.* to fabric@"%";'
-mysql -vv -h127.0.0.1 -P13306 -uroot -e 'grant all on *.* to fabric@"%" identified by "f4bric"; grant all on *.* to fabric@"%";'
-mysql -vv -h127.0.0.1 -P13306 -uroot -e 'grant all on *.* to fabric@localhost identified by "f4bric"; grant all on *.* to fabric@"%";'
+mysql -vv -h127.0.0.1 -P3306 -uroot -e 'grant all on *.* to fabric@"%"; grant all on *.* to fabric@"%";'
+mysql -vv -h127.0.0.1 -P3306 -uroot -e 'grant all on *.* to fabric@localhost; grant all on *.* to fabric@"%";'
+mysql -vv -h127.0.0.1 -P13306 -uroot -e 'grant all on *.* to fabric@"%"; grant all on *.* to fabric@"%";'
+mysql -vv -h127.0.0.1 -P13306 -uroot -e 'grant all on *.* to fabric@localhost; grant all on *.* to fabric@"%";'
 EOF
     vagrant ssh node$i -c "$(cat commands.$$)"
 
