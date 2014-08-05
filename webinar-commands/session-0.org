@@ -13,6 +13,8 @@ nohup mysqlfabric manage start &
 we need to use nohup because --daemon stopped working on this release (see http://bugs.mysql.com/bug.php?id=72818)
 now fabric should be running and responding to requests :
 
+(This bug was resolved on the latest release, which is working on this Vagrant environment. We're leaving the previous comment only for people who may still be using the first GA version)
+
 #+BEGIN_EXAMPLE
 [vagrant@store ~]$ mysqlfabric group lookup_groups
 Command :
