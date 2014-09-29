@@ -49,3 +49,15 @@ detections                      = 3
 detection_interval              = 6
 detection_timeout               = 1
 prune_time                      = 3600
+
+[client]
+password=
+
+[protocol.mysql]
+disable_authentication = no
+ssl_cert =
+ssl_key =
+ssl_ca =
+user = admin
+address = localhost:32275
+password =
